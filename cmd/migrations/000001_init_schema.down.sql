@@ -1,0 +1,3 @@
+ALTER TABLE "todos" DROP CONSTRAINT IF EXISTS "todos_user_id_fkey";
+DROP TABLE IF EXISTS "todos";
+DROP TABLE IF EXISTS "users";
