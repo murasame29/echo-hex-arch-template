@@ -48,7 +48,7 @@ func TestJWTToken(t *testing.T) {
 				return token
 			},
 			checkToken: func(t *testing.T, token string) {
-				payload, err := maker.Verifytoken(token)
+				payload, err := maker.VerifyToken(token)
 				require.NoError(t, err)
 				require.NotEmpty(t, payload)
 
@@ -67,7 +67,7 @@ func TestJWTToken(t *testing.T) {
 				return token
 			},
 			checkToken: func(t *testing.T, token string) {
-				_, err := maker.Verifytoken(token)
+				_, err := maker.VerifyToken(token)
 				require.Error(t, err)
 				require.Equal(t, ErrExpiredToken, err)
 			},
@@ -83,7 +83,7 @@ func TestJWTToken(t *testing.T) {
 				return token
 			},
 			checkToken: func(t *testing.T, token string) {
-				_, err := maker.Verifytoken(token[:20])
+				_, err := maker.VerifyToken(token[:20])
 				log.Println(err)
 				require.Error(t, err)
 				require.Equal(t, ErrInvalidToken, err)

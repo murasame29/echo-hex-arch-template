@@ -29,7 +29,7 @@ func (maker *JWTMaker) CreateToken(userID string, email string, duration time.Du
 	return jwtToken.SignedString([]byte(maker.secretKey))
 }
 
-func (maker *JWTMaker) Verifytoken(token string) (*Payload, error) {
+func (maker *JWTMaker) VerifyToken(token string) (*Payload, error) {
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC)
 		if !ok {
