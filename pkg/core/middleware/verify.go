@@ -46,10 +46,17 @@ func verifyToken(maker token.Maker) echo.MiddlewareFunc {
 
 func decodeJWT(ctx echo.Context, maker token.Maker, authToken string) {
 	fields := strings.Fields(authToken)
-	if len(fields) < 1 {
+	if len(fields) < 2 {
 		ctx.Set(AuthorizationStatus, INVALID_TOKEN)
 		return
 	}
+
+	authorizationType := strings.ToLower(fields[0])
+	if authorizationType != AuthorizationTypeBearer {
+		ctx.Set(AuthorizationStatus, INVALID_TOKEN)
+		return
+	}
+
 	accessToken := fields[1]
 	payload, err := maker.Verifytoken(accessToken)
 	if err != nil {
