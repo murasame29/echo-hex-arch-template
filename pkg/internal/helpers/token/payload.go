@@ -18,13 +18,13 @@ type Payload struct {
 }
 
 // 新たなペイロードを作る
-func NewPayload(userID, email string, duration time.Duration) (*Payload, error) {
+func NewPayload(userID, email string, duration time.Duration) *Payload {
 	return &Payload{
 		UserID:    userID,
 		Email:     email,
 		IssuedAt:  time.Now(),
 		ExpiredAt: time.Now().Add(duration),
-	}, nil
+	}
 }
 
 // トークンペイロードを検証する
