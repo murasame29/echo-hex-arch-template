@@ -39,8 +39,6 @@ func LoadEnvConfig(path string) Env {
 	viper.SetConfigName("app")
 	viper.SetConfigType("env")
 
-	viper.AutomaticEnv()
-
 	var config EnvStructure
 
 	if err := viper.ReadInConfig(); err != nil {
