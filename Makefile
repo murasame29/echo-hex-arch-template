@@ -2,10 +2,10 @@ init:
 	docker run --name examples-postgres -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=examples -d postgres:12-alpine
 
 postgresStart:
-	docker start hackhack-postgres
+	docker start examples-postgres
 
 postgresStop:
-	docker stop hackhack-postgres
+	docker stop examples-postgres
 
 migrateup:
 	migrate -path cmd/migrations -database "postgresql://root:postgres@localhost:5432/examples?sslmode=disable" -verbose up
