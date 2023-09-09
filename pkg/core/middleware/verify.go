@@ -34,7 +34,10 @@ func verifyToken(maker token.Maker) echo.MiddlewareFunc {
 			if len(authorizationHeader) == 0 {
 				ctx.Set(AuthorizationStatus, TOKEN_NOT_FOUNT)
 			} else {
-				decodeJWT(ctx, maker, authorizationHeader)
+				payload, status := decodeJWT(maker, authorizationHeader)
+
+				ctx.Set(AuthorizationStatus, status)
+				ctx.Set(AuthorizationPayloadKey, payload)
 			}
 
 			err := next(ctx)
@@ -44,21 +47,23 @@ func verifyToken(maker token.Maker) echo.MiddlewareFunc {
 	}
 }
 
-func decodeJWT(ctx echo.Context, maker token.Maker, authToken string) {
+func decodeJWT(maker token.Maker, authToken string) (*token.Payload, int) {
 	fields := strings.Fields(authToken)
-	if len(fields) < 1 {
-		ctx.Set(AuthorizationStatus, INVALID_TOKEN)
-		return
-	}
-	accessToken := fields[1]
-	payload, err := maker.Verifytoken(accessToken)
-	if err != nil {
-		ctx.Set(AuthorizationStatus, INVALID_TOKEN)
-		return
+	if len(fields) < 2 {
+		return nil, INVALID_TOKEN
 	}
 
-	ctx.Set(AuthorizationStatus, TOKEN_OK)
-	ctx.Set(AuthorizationPayloadKey, payload)
+	authorizationType := strings.ToLower(fields[0])
+	if authorizationType != AuthorizationTypeBearer {
+		return nil, INVALID_TOKEN
+	}
+
+	accessToken := fields[1]
+	payload, err := maker.VerifyToken(accessToken)
+	if err != nil {
+		return nil, INVALID_TOKEN
+	}
+	return payload, TOKEN_OK
 }
 
 func getHeader(ctx echo.Context, key string) string {
