@@ -21,8 +21,8 @@ func (es *EchoServer) configure() {
 	// ここではmiddlewareやcorsを設定する
 }
 
-func (es *EchoServer) Run() {
-	es.Logger.Fatal(es.Start(":" + es.env.ServerPort))
+func (es *EchoServer) Run() error {
+	return es.Start(":" + es.env.ServerPort)
 }
 
 func NewServer(ctx context.Context, db *sql.DB, maker token.Maker, env *env.Env) Server {
