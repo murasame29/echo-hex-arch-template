@@ -25,6 +25,10 @@ func (es *EchoServer) Run() error {
 	return es.Start(":" + es.env.ServerPort)
 }
 
+func (es *EchoServer) Close(ctx context.Context) error {
+	return es.Shutdown(ctx)
+}
+
 func NewServer(ctx context.Context, db *sql.DB, maker token.Maker, env *env.Env) Server {
 	if env.ServerPort == "" {
 		env.ServerPort = "8080"

@@ -22,6 +22,8 @@ type EnvStructure struct {
 
 	ServerPort     string `mapstructure:"SERVER_PORT"`
 	ContextTimeout string `mapstructure:"CONTEXT_TIMEOUT"`
+
+	ShutdownTimeout string `mapstructure:"SHUTDOWN_TIMEOUT"`
 }
 
 type Env struct {
@@ -30,8 +32,9 @@ type Env struct {
 	TokenExpired int
 	TokenSecret  string
 
-	ServerPort     string
-	ContextTimeout int
+	ServerPort      string
+	ContextTimeout  int
+	ShutdownTimeout int
 }
 
 func LoadEnvConfig(path string) Env {
@@ -74,6 +77,11 @@ func LoadEnvConfig(path string) Env {
 		log.Fatal("Could not parse to int type: ", err)
 	}
 
+	shutdownTimeout, err := helpers.ParseInt(config.ShutdownTimeout)
+	if err != nil {
+		log.Fatal("Could not parse to int type: ", err)
+	}
+
 	return Env{
 		Dbconfig: database.Config{
 			User:            config.User,
@@ -87,7 +95,8 @@ func LoadEnvConfig(path string) Env {
 		TokenExpired: tokenExpired,
 		TokenSecret:  config.TokenSecret,
 
-		ServerPort:     config.ServerPort,
-		ContextTimeout: contextTimeout,
+		ServerPort:      config.ServerPort,
+		ContextTimeout:  contextTimeout,
+		ShutdownTimeout: shutdownTimeout,
 	}
 }
