@@ -36,7 +36,7 @@ func (es *EchoServer) TodoRoute() {
 }
 
 func (es *EchoServer) routes() {
-	es.Use(middleware.Verify(es.maker))
+	es.Use(middleware.AccessLogger(), middleware.Verify(es.maker))
 
 	es.LoginRoute()
 	es.TodoRoute()
