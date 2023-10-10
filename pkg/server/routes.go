@@ -6,7 +6,7 @@ import (
 )
 
 func (es *EchoServer) LoginRoute() {
-	login := application.NewLoginHTTPService(es.ctx, es.db, es.maker, *es.env)
+	login := application.NewLoginHTTPService(es.ctx, es.db, es.maker, es.l)
 
 	es.POST("/login", login.Login)
 }

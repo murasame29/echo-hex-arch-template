@@ -5,15 +5,16 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/murasame29/echo-hex-arch-template/pkg/env"
+	"github.com/murasame29/echo-hex-arch-template/cmd/config"
 	"github.com/murasame29/echo-hex-arch-template/pkg/internal/database"
+	"github.com/murasame29/echo-hex-arch-template/pkg/logger"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 type Gorm struct {
-	ctx    context.Context
-	config database.Config
+	ctx context.Context
+	l   logger.Logger
 }
 
 func (g *Gorm) Ping(err error, db *sql.DB) error {
@@ -47,12 +48,12 @@ func (g *Gorm) connect(dsn string) (*sql.DB, error) {
 }
 
 func (g *Gorm) ConnectDB() *sql.DB {
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=disable", g.config.Host, g.config.User, g.config.Password, g.config.DBname, g.config.Port)
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=disable", config.Config.Database.Host, config.Config.Database.User, config.Config.Database.Password, config.Config.Database.Name, config.Config.Database.Port)
 
-	for i := 0; i < g.config.ConnectAttempts; i++ {
+	for i := 0; i < config.Config.Database.ConnectAttempts; i++ {
 		db, err := g.connect(dsn)
 
-		if database.Try(err, g.config.ConnectTimeout, i) == nil {
+		if database.Try(err, config.Config.Database.ConnectionTimeout, i) == nil {
 			return db
 		}
 
@@ -62,9 +63,9 @@ func (g *Gorm) ConnectDB() *sql.DB {
 	return nil
 }
 
-func New(ctx context.Context, env *env.Env) database.Database {
+func New(ctx context.Context, l logger.Logger) database.Database {
 	return &Gorm{
-		ctx:    ctx,
-		config: env.Dbconfig,
+		ctx: ctx,
+		l:   l,
 	}
 }

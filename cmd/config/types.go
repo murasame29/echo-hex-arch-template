@@ -14,14 +14,14 @@ type config struct {
 	}
 
 	Server struct {
-		ServerAddr      string `env:"SERVER_ADDR" envDefault:"0.0.0.0:8080"`
+		Addr            string `env:"SERVER_ADDR" envDefault:":8080"`
 		ContextTimeout  int    `env:"SERVER_CONTEXT_TIMEOUT" envDefault:"5"`
 		ShutdownTimeout int    `env:"SERVER_SHUTDOWN_TIMEOUT" envDefault:"10"`
 	}
 
 	Token struct {
-		TokenExpired int    `env:"TOKEN_EXPIRED" envDefault:"10"`
-		TokenSecret  string `env:"TOKEN_SECRET" envDefault:"abcdefghijabcdefghijabcdefghijab"`
+		Expired int    `env:"TOKEN_EXPIRED" envDefault:"10"`
+		Secret  string `env:"TOKEN_SECRET" envDefault:"abcdefghijabcdefghijabcdefghijab"`
 	}
 
 	NewRelic struct {

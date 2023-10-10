@@ -8,8 +8,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/murasame29/echo-hex-arch-template/pkg/core/entities/request"
 	"github.com/murasame29/echo-hex-arch-template/pkg/core/infrastructure/gateway"
-	"github.com/murasame29/echo-hex-arch-template/pkg/env"
 	"github.com/murasame29/echo-hex-arch-template/pkg/internal/helpers/token"
+	"github.com/murasame29/echo-hex-arch-template/pkg/logger"
 )
 
 type loginHTTPService interface {
@@ -20,9 +20,9 @@ type LoginHTTPService struct {
 	gw gateway.LoginGateway
 }
 
-func NewLoginHTTPService(ctx context.Context, db *sql.DB, maker token.Maker, env env.Env) loginHTTPService {
+func NewLoginHTTPService(ctx context.Context, db *sql.DB, maker token.Maker, l logger.Logger) loginHTTPService {
 	return &LoginHTTPService{
-		gw: gateway.NewLoginGateway(ctx, db, maker, env),
+		gw: gateway.NewLoginGateway(ctx, db, maker, l),
 	}
 }
 

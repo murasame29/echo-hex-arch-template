@@ -9,32 +9,31 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/murasame29/echo-hex-arch-template/pkg/env"
+	"github.com/murasame29/echo-hex-arch-template/cmd/config"
 	"github.com/murasame29/echo-hex-arch-template/pkg/internal/database/gorm"
 	"github.com/murasame29/echo-hex-arch-template/pkg/internal/helpers/token"
+	"github.com/murasame29/echo-hex-arch-template/pkg/logger"
 	"github.com/murasame29/echo-hex-arch-template/pkg/server"
 )
 
-func Start() {
+func Start(l logger.Logger) {
 	ctx := context.Background()
 	notifyCtx, stop := signal.NotifyContext(context.Background(), os.Interrupt, os.Kill)
 	defer stop()
 
-	env := env.LoadEnvConfig("./")
-
-	db := gorm.New(ctx, &env).ConnectDB()
+	db := gorm.New(ctx, l).ConnectDB()
 	if db == nil {
 		log.Fatal("DBの接続が出来ませんでした")
 	}
 
 	defer db.Close()
 
-	maker, err := token.NewJWTMaker(env.TokenSecret)
+	maker, err := token.NewJWTMaker(config.Config.Token.Secret)
 	if err != nil {
 		log.Fatal("token Maker Error :", err)
 	}
 
-	srv := server.NewServer(ctx, db, maker, &env)
+	srv := server.NewServer(ctx, db, maker, l)
 
 	go func() {
 		log.Println("starting server ...")
@@ -48,7 +47,7 @@ func Start() {
 
 	<-notifyCtx.Done()
 
-	ctx, cancel := context.WithTimeout(ctx, time.Duration(env.ShutdownTimeout)*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, time.Duration(config.Config.Server.ShutdownTimeout)*time.Second)
 	defer cancel()
 
 	if err := srv.Close(ctx); err != nil {

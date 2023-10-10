@@ -6,12 +6,13 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/murasame29/echo-hex-arch-template/cmd/config"
 	"github.com/murasame29/echo-hex-arch-template/pkg/core/entities/request"
 	"github.com/murasame29/echo-hex-arch-template/pkg/core/entities/response"
 	"github.com/murasame29/echo-hex-arch-template/pkg/core/infrastructure/storage"
-	"github.com/murasame29/echo-hex-arch-template/pkg/env"
 	"github.com/murasame29/echo-hex-arch-template/pkg/internal/helpers/password"
 	"github.com/murasame29/echo-hex-arch-template/pkg/internal/helpers/token"
+	"github.com/murasame29/echo-hex-arch-template/pkg/logger"
 )
 
 type LoginGateway interface {
@@ -21,11 +22,11 @@ type LoginGateway interface {
 type LoginLogic struct {
 	storage storage.LoginStorage
 	maker   token.Maker
-	env     env.Env
+	l       logger.Logger
 }
 
-func NewLoginGateway(ctx context.Context, db *sql.DB, maker token.Maker, env env.Env) LoginGateway {
-	return &LoginLogic{storage.NewLoginStorage(ctx, db), maker, env}
+func NewLoginGateway(ctx context.Context, db *sql.DB, maker token.Maker, l logger.Logger) LoginGateway {
+	return &LoginLogic{storage.NewLoginStorage(ctx, db), maker, l}
 }
 
 func (ll *LoginLogic) Login(body request.Login) (int, response.Login) {
@@ -38,7 +39,7 @@ func (ll *LoginLogic) Login(body request.Login) (int, response.Login) {
 		return http.StatusUnauthorized, response.Login{}
 	}
 
-	token, err := ll.maker.CreateToken(body.UserID, user.Email, time.Duration(ll.env.TokenExpired)*24*time.Hour)
+	token, err := ll.maker.CreateToken(body.UserID, user.Email, time.Duration(config.Config.Token.Expired)*24*time.Hour)
 	if err != nil {
 		return http.StatusInternalServerError, response.Login{}
 	}

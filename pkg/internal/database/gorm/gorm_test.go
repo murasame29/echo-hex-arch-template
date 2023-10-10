@@ -4,13 +4,15 @@ import (
 	"context"
 	"testing"
 
-	"github.com/murasame29/echo-hex-arch-template/pkg/env"
+	"github.com/murasame29/echo-hex-arch-template/cmd/config"
+	"github.com/murasame29/echo-hex-arch-template/pkg/logger"
 	"github.com/stretchr/testify/require"
 )
 
 func TestConnectDB(t *testing.T) {
-	env := env.LoadEnvConfig("../../../../")
-	db := New(context.Background(), &env)
+	l := logger.NewLogger(logger.DEBUG)
+	config.LoadEnv(l)
+	db := New(context.Background(), l)
 
 	sqlDB := db.ConnectDB()
 

@@ -5,8 +5,9 @@ import (
 	"database/sql"
 
 	"github.com/labstack/echo/v4"
-	"github.com/murasame29/echo-hex-arch-template/pkg/env"
+	"github.com/murasame29/echo-hex-arch-template/cmd/config"
 	"github.com/murasame29/echo-hex-arch-template/pkg/internal/helpers/token"
+	"github.com/murasame29/echo-hex-arch-template/pkg/logger"
 )
 
 type EchoServer struct {
@@ -14,7 +15,7 @@ type EchoServer struct {
 	ctx   context.Context
 	db    *sql.DB
 	maker token.Maker
-	env   *env.Env
+	l     logger.Logger
 }
 
 func (es *EchoServer) configure() {
@@ -22,24 +23,21 @@ func (es *EchoServer) configure() {
 }
 
 func (es *EchoServer) Run() error {
-	return es.Start(":" + es.env.ServerPort)
+	return es.Start(config.Config.Server.Addr)
 }
 
 func (es *EchoServer) Close(ctx context.Context) error {
 	return es.Shutdown(ctx)
 }
 
-func NewServer(ctx context.Context, db *sql.DB, maker token.Maker, env *env.Env) Server {
-	if env.ServerPort == "" {
-		env.ServerPort = "8080"
-	}
+func NewServer(ctx context.Context, db *sql.DB, maker token.Maker, l logger.Logger) Server {
 
 	server := &EchoServer{
 		echo.New(),
 		ctx,
 		db,
 		maker,
-		env,
+		l,
 	}
 	server.configure()
 	server.routes()
